@@ -1,0 +1,52 @@
+waypt1_14_48.927230464786334_8.109561293040809_-32.223052978515625 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt2_15_48.92723966312053_8.109771001069555_-32.48609924316406 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt3_10_48.92716251829947_8.109810260316664_-32.485206604003906 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt4_8_48.92705290234085_8.109639089464403_-31.542774200439453 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt5_7_48.92702555761542_8.110051806311136_-31.57951545715332 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt6_4_48.926895919253155_8.10999468918783_-30.34579849243164 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt7_2_48.9268884208461_8.110242720446214_-30.2658748626709 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt8_1_48.92688377332675_8.11033469084867_-30.117000579833984 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt10_5_48.92691625763328_8.110598888465962_-30.286706924438477 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt11_6_48.927016728231024_8.110786787287614_-30.62401580810547 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt9_3_48.92689479910453_8.110509171191277_-30.219552993774414 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt12_13_48.92722568991016_8.11097683226361_-31.508230209350586 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt13_11_48.927187363495705_8.110888458842583_-31.408161163330078 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt14_9_48.92709399627353_8.110484460330019_-32.02906036376953 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt15_12_48.92719328048105_8.110594021175109_-32.52383041381836 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt16_16_48.92724314653893_8.110779513094688_-31.694602966308594 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt18_23_48.92734210099735_8.110837058111695_-32.022315979003906 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt19_18_48.92742776736574_8.110635460005758_-32.82636260986328 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt20_21_48.92759024841524_8.110777273338595_-33.40762710571289 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt21_27_48.927520391600154_8.110570874800194_-33.35444259643555 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt23_25_48.9277497155683_8.110031046780776_-34.11092758178711 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt24_29_48.92763511521329_8.110062283020982_-33.66859436035156 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt25_30_48.927655826669564_8.109722689196326_-33.887115478515625 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt26_28_48.92757819929665_8.10995069636665_-33.96224594116211 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt27_17_48.92745707540351_8.109805553485948_-34.228267669677734 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+
+
+(correct)waypt1_14_48.927230464786334_8.109561293040809_-32.223052978515625 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+(partially correct upper=wound)waypt2_15_48.92723966312053_8.109771001069555_-32.48609924316406 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+(partially correct upper=wound,detected injury but some amputation as well and at last hand pressing on wound as no_injury)waypt3_10_48.92716251829947_8.109810260316664_-32.485206604003906 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(correct)waypt4_8_48.92705290234085_8.109639089464403_-31.542774200439453 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(correct)waypt5_7_48.92702555761542_8.110051806311136_-31.57951545715332 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+(correct)waypt6_4_48.926895919253155_8.10999468918783_-30.34579849243164 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(correct)waypt7_2_48.9268884208461_8.110242720446214_-30.2658748626709 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(partially no wound on larm)waypt8_1_48.92688377332675_8.11033469084867_-30.117000579833984 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+(correct)waypt9_3_48.92689479910453_8.110509171191277_-30.219552993774414 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+(correct)waypt10_5_48.92691625763328_8.110598888465962_-30.286706924438477 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(partially wound on rarm)waypt11_6_48.927016728231024_8.110786787287614_-30.62401580810547 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+(correct)waypt12_13_48.92722568991016_8.11097683226361_-31.508230209350586 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+(partially wrong wound on rarm)waypt13_11_48.927187363495705_8.110888458842583_-31.408161163330078 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt14_9_48.92709399627353_8.110484460330019_-32.02906036376953 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt15_12_48.92719328048105_8.110594021175109_-32.52383041381836 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt16_16_48.92724314653893_8.110779513094688_-31.694602966308594 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt18_23_48.92734210099735_8.110837058111695_-32.022315979003906 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt19_18_48.92742776736574_8.110635460005758_-32.82636260986328 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt20_21_48.92759024841524_8.110777273338595_-33.40762710571289 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
+waypt21_27_48.927520391600154_8.110570874800194_-33.35444259643555 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt23_25_48.9277497155683_8.110031046780776_-34.11092758178711 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt24_29_48.92763511521329_8.110062283020982_-33.66859436035156 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'wound'}
+waypt25_30_48.927655826669564_8.109722689196326_-33.887115478515625 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt26_28_48.92757819929665_8.10995069636665_-33.96224594116211 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'normal', 'lower_extremity': 'normal'}
+waypt27_17_48.92745707540351_8.109805553485948_-34.228267669677734 : {'head': 'normal', 'torso': 'normal', 'upper_extremity': 'wound', 'lower_extremity': 'normal'}
