@@ -59,21 +59,25 @@ def ocular_model(input_dir):
         print(f"Total images processed: {total_images}")
         print(f"Open eyes count: {open_count}")
         print(f"Close eyes count: {close_count}")
-#####	print(f"Not able to count: {not_able_to_count}")
+        print(f"Not able to count: {not_able_to_count}")
         print(f"Percentage open eyes: {open_count / total_images:.2%}")
         print(f"Percentage close eyes: {close_count / total_images:.2%}")
-	print(f"Percentage not able to count: {not_able_to_count / total_images:.2%}")
+        print(f"Percentage not able to count: {not_able_to_count / total_images:.2%}")
         print("#########################")
         if float(open_count / total_images) >= threshold :
             print("Open")
             return "Open"
         elif float(not_able_to_count / total_images) >= threshold_non_testable:
             print("Non Testable")
-            ocular_result = "Non Testable"
-	else :
-            print("Close")
-            return "Close"
+            # ocular_result = "Non Testable"
+        else :
+                print("Close")
+                return "Close"
     else:
         print("No images found in the specified folder.")
 if __name__ == '__main__':
-    ocular_model("/home/uas-dtu/nikhil-darpa/images_sahil_test/waypt10_5_48.92691625763328_8.110598888465962_-30.286706924438477")
+    input_dir = "/home/uas-dtu/nikhil-darpa/images_sahil_test"
+    for i in os.listdir(input_dir):
+        print(i)
+        ocular_model(os.path.join(input_dir, i))
+    # ocular_model("/home/uas-dtu/nikhil-darpa/images_sahil_test/waypt10_5_48.92691625763328_8.110598888465962_-30.286706924438477")

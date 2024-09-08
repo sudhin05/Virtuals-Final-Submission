@@ -68,18 +68,6 @@ def ocular_model(folder, img_list, txt_list, observation_end):
             cropped_image1 = image.crop((coords1[0], coords1[1], coords1[2], coords1[3]))
             
             coords2 = [float(coord) for coord in lines[1].split()]
-            if coords2[0] == 0 and coords2[1] == 0 and coords2[2] == 0 and coords2[3] == 0:
-                not_able_to_count += 1
-            else : 
-                double_cropped_image = cropped_image1.crop((coords2[0], coords2[1], coords2[2], coords2[3]))
-            
-                
-                prediction = eye_model(double_cropped_image)
-
-                if prediction == 'Close-Eyes':
-                    close_count += 1
-                elif prediction == 'Open-Eyes':
-                    open_count += 1
 
     if total_images > 0:
         print("#########################")
