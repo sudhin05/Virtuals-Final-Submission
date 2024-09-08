@@ -93,7 +93,7 @@ def run_lora(args, clip_model, logit_scale, dataset,test_loader):
     
     VALIDATION = False
     
-    print("\nGetting textual features as CLIP's classifier.")
+    print("\nGetting textual features as CLIP's  classifier.")
     textual_features = clip_classifier(dataset.classnames, dataset.template, clip_model)
 
     test_features = pre_load_features(clip_model, test_loader)

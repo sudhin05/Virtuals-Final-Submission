@@ -3,14 +3,17 @@ from torchvision import transforms as T
 from PIL import Image
 import os
 import threading
-from grand_finale.CLIP_VIRTUAL_LODA.publisher.report_publisher import pub  
+import sys
+sys.path.append('/home/uas-dtu/SudhinDarpa/grand_finale/CLIP_VIRTUAL_LODA')
+from report_publisher import pub  
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model_path = "/home/uas-dtu/SudhinDarpa/Ocular/MRL_dataset_deit-384.pt"
 model = torch.jit.load(model_path)
 model = model.to(device)
 
-def ocular_model(folder, img_list, txt_list, observation_end):
+def ocular_model(folder_path):
+    folder = folder_path.split('/')[-1]
     threshold = 0.8
     classes = ['Close-Eyes', 'Open-Eyes']
     transform = T.Compose([
@@ -27,7 +30,7 @@ def ocular_model(folder, img_list, txt_list, observation_end):
         _, pred = torch.max(output, 1)
         return classes[pred.item()]
     
-    def occ_result_maker(folder, results):
+    def occ_result_maker(folder,observation_end,results):
         parts = folder.split('_')
         observation_start = parts[5]   
         casualty_id = parts[1]        
@@ -57,8 +60,14 @@ def ocular_model(folder, img_list, txt_list, observation_end):
     close_count = 0
     total_images = len(img_list)
  
-    for img_path, txt_path in zip(img_list, txt_list):
-        if os.path.exists(img_path) and os.path.exists(txt_path):
+    for img_name in sorted(os.listdir(folder_path)):
+        if img_name.endswith(('.jpg', '.jpeg', '.png')):
+            txt_name = os.path.splitext(img_path)[0] + '.txt'
+            img_path = os.path.join(folder_path, img_name)
+            txt_path = os.path.join(folder_path, txt_name)
+            
+            last_img = os.path.splitext(img_name)[0]
+            
             with open(txt_path, 'r') as f:
                 lines = f.readlines()
             image = Image.open(img_path)
@@ -75,6 +84,10 @@ def ocular_model(folder, img_list, txt_list, observation_end):
             elif prediction == 'Open-Eyes':
                 open_count += 1
 
+            total_images += 1
+      
+    obs_end = last_img.split('_')[-1]      
+            
     if total_images > 0:
         print("#########################")
         print(f"Total images processed: {total_images}")
@@ -89,10 +102,20 @@ def ocular_model(folder, img_list, txt_list, observation_end):
         else:
             print("Close")
             ocular_result = "close"
+            
+    
 
-    json_report = occ_result_maker(folder, ocular_result)
+    json_report = occ_result_maker(folder,obs_end,ocular_result)
     
     t2 = threading.Thread(target=pub, args=(json_report,))
     t2.start()
 
-    return ocular_result
+    return 
+
+if __name__=="__main__":
+    parser = argparse.ArgumentParser(description="Run ocular calculator on images in the specified folder.")
+    parser.add_argument('--root_path', type=str, required=True, help='Path to the root folder containing images')
+
+    # Parse arguments
+    args = parser.parse_args()
+    ocular_model(args.root_path)

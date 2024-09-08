@@ -22,7 +22,7 @@ class DataSaver(Node):
         
         self.rgb_image_subscriber = self.create_subscription(
             Image,
-            '/carla/dtc_vehicle/front_rgb/image',
+            '/carla/dtc_vehicle/front_ir/image',
             self.rgb_image_callback,
             10
         )
@@ -61,7 +61,7 @@ class DataSaver(Node):
         # Casualty Counter
         self.ctr = 1
 
-        self.image_save_dir = "/home/uas-dtu/nikhil-darpa/images"
+        self.image_save_dir = "/home/uas-dtu/nikhil-darpa/images_ir"
         if not os.path.exists(self.image_save_dir):
             os.makedirs(self.image_save_dir)
         

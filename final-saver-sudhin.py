@@ -58,7 +58,7 @@ class DataSaver(Node):
 
         self.ctr = 1
 
-        self.image_save_dir = "/home/uas-dtu/SudhinDarpa/images_ocu"
+        self.image_save_dir = "/home/uas-dtu/SudhinDarpa/images-sudhin"
         if not os.path.exists(self.image_save_dir):
             os.makedirs(self.image_save_dir)
         
@@ -124,7 +124,7 @@ class DataSaver(Node):
                 self.create_casualty_folder()
 
             if len(self.latest_rgb_images) > self.frames_to_discard:
-                image_filename = os.path.join(self.current_casualty_folder, f"image_{len(self.latest_rgb_images):05d}.jpg")
+                image_filename = os.path.join(self.current_casualty_folder, f"image_{len(self.latest_rgb_images):05d}.png")
                 cv2.imwrite(image_filename, cv_image)
 
     def reset_saving_data(self):
