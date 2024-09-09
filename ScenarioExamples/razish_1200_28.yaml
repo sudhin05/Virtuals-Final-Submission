@@ -17,9 +17,9 @@ waypoints:
     dwell_time: 28
   - zone: 15
     dwell_time: 28
-  - zone: 8
-    dwell_time: 28
   - zone: 10
+    dwell_time: 28
+  - zone: 8
     dwell_time: 28
   - zone: 7
     dwell_time: 28
@@ -35,39 +35,39 @@ waypoints:
     dwell_time: 28
   - zone: 6
     dwell_time: 28
-  - zone: 18
-    dwell_time: 28
-  - zone: 11
-    dwell_time: 28
   - zone: 9
     dwell_time: 28
   - zone: 12
     dwell_time: 28
   - zone: 16
     dwell_time: 28
+  - zone: 11
+    dwell_time: 28
+  - zone: 13
+    dwell_time: 28
   - zone: 20
     dwell_time: 28
   - zone: 23
     dwell_time: 28
-  - zone: 13
+  - zone: 18
     dwell_time: 28
   - zone: 21
     dwell_time: 28
-  - zone: 27
-    dwell_time: 28
   - zone: 24
     dwell_time: 28
-  - zone: 25
+  - zone: 27
     dwell_time: 28
   - zone: 29
+    dwell_time: 28
+  - zone: 25
     dwell_time: 28
   - zone: 30
     dwell_time: 28
   - zone: 28
+    dwell_time: 26
+  - zone: 26
     dwell_time: 28
   - zone: 17
-    dwell_time: 28
-  - zone: 26
     dwell_time: 28
   - zone: 22
     dwell_time: 28
