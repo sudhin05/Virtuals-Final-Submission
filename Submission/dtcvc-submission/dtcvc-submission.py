@@ -7,19 +7,19 @@ import pprint
 import rclpy
 import rclpy.node
 
-# from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Quaternion
 from rclpy.parameter import Parameter
 # from sensor_msgs.msg import Image, NavSatFix, Imu, PointCloud2
 from std_msgs.msg import Empty, Bool, String
 
 import subprocess
 
-# from dtcvc_submission.dtcvc_triage_report_generator import DtcvcTriageReportGenerator
+# from dtcvc_competitor.dtcvc_triage_report_generator import DtcvcTriageReportGenerator
 """
   Please check self.file_path which is int the final-saver script : and the manner to retreive the waypoints list
 """
 
-class DtcvcSubmission(rclpy.node.Node):
+class Dtcvccompetitor(rclpy.node.Node):
     # TOPIC_RGB_CAMERA = "/carla/{}/front_rgb/image"
     # TOPIC_IR_CAMERA = "/carla/{}/front_ir/image"
 
@@ -35,7 +35,7 @@ class DtcvcSubmission(rclpy.node.Node):
 
     def __init__(self):
         super().__init__(
-            "dtcvc_submission",
+            "dtcvc_competitor",
             allow_undeclared_parameters=True,
             automatically_declare_parameters_from_overrides=True,
         )
@@ -46,9 +46,9 @@ class DtcvcSubmission(rclpy.node.Node):
         # if type(self.role_name) == Parameter:
         #     self.role_name = self.role_name.get_parameter_value().string_value
 
-        # self.latitude = 0
-        # self.longitude = 0
-        # self.orientation = Quaternion()
+        self.latitude = 0
+        self.longitude = 0
+        self.orientation = Quaternion()
 
         #Initializes Competitor start and stop
         self.init_topics()
@@ -69,7 +69,7 @@ class DtcvcSubmission(rclpy.node.Node):
         self.comp_start_subscriber = self.log_subscription(
             self.create_subscription(
                 Empty,
-                DtcvcSubmission.TOPIC_COMPETITION_START,
+                Dtcvccompetitor.TOPIC_COMPETITION_START,
                 self.comp_start_callback,
                 qos_profile=10,
             )
@@ -81,14 +81,14 @@ class DtcvcSubmission(rclpy.node.Node):
         self.comp_stop_subscriber = self.log_subscription(
             self.create_subscription(
                 Empty,
-                DtcvcSubmission.TOPIC_COMPETITION_STOP,
+                Dtcvccompetitor.TOPIC_COMPETITION_STOP,
                 self.comp_stop_callback,
                 qos_profile=10,
             )
         )
 
         # Publish competitor ready signal
-        self.ready_publisher = self.create_publisher(Empty, DtcvcSubmission.TOPIC_COMPETITOR_READY, 10)
+        self.ready_publisher = self.create_publisher(Empty, Dtcvccompetitor.TOPIC_COMPETITOR_READY, 10)
 
         # Periodically log current state
         self.log_timer = self.create_timer(5.0, self.log_info)
@@ -120,7 +120,7 @@ class DtcvcSubmission(rclpy.node.Node):
     #     self.rgb_subscriber = self.log_subscription(
     #         self.create_subscription(
     #             Image,
-    #             DtcvcSubmission.TOPIC_RGB_CAMERA.format(self.role_name),
+    #             Dtcvccompetitor.TOPIC_RGB_CAMERA.format(self.role_name),
     #             self.rgb_image_callback,
     #             qos_profile=10,
     #         )
@@ -129,7 +129,7 @@ class DtcvcSubmission(rclpy.node.Node):
     #     self.ir_subscriber = self.log_subscription(
     #         self.create_subscription(
     #             Image,
-    #             DtcvcSubmission.TOPIC_IR_CAMERA.format(self.role_name),
+    #             Dtcvccompetitor.TOPIC_IR_CAMERA.format(self.role_name),
     #             self.ir_image_callback,
     #             qos_profile=10,
     #         )
@@ -138,7 +138,7 @@ class DtcvcSubmission(rclpy.node.Node):
     #     self.gps_subscriber = self.log_subscription(
     #         self.create_subscription(
     #             NavSatFix,
-    #             DtcvcSubmission.TOPIC_GPS.format(self.role_name),
+    #             Dtcvccompetitor.TOPIC_GPS.format(self.role_name),
     #             self.gnss_callback,
     #             qos_profile=10,
     #         )
@@ -147,7 +147,7 @@ class DtcvcSubmission(rclpy.node.Node):
     #     self.imu_subscriber = self.log_subscription(
     #         self.create_subscription(
     #             Imu,
-    #             DtcvcSubmission.TOPIC_IMU.format(self.role_name),
+    #             Dtcvccompetitor.TOPIC_IMU.format(self.role_name),
     #             self.imu_callback,
     #             qos_profile=10,
     #         )
@@ -155,13 +155,13 @@ class DtcvcSubmission(rclpy.node.Node):
 
     #     self.audio_subscriber = self.log_subscription(
     #         self.create_subscription(
-    #             String, DtcvcSubmission.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
+    #             String, Dtcvccompetitor.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
     #         )
     #     )
 
-    # def log_subscription(self, subscription):
-    #     self.get_logger().info(f"Subscribed to: {subscription.topic_name}")
-    #     return subscription
+    def log_subscription(self, subscription):
+        self.get_logger().info(f"Subscribed to: {subscription.topic_name}")
+        return subscription
 
     # def gnss_callback(self, data: NavSatFix):
     #     """
@@ -236,7 +236,7 @@ class DtcvcSubmission(rclpy.node.Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = DtcvcSubmission()
+    node = Dtcvccompetitor()
 
     try:
         rclpy.spin(node)
