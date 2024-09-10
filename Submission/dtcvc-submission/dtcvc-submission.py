@@ -14,12 +14,12 @@ from std_msgs.msg import Empty, Bool, String
 
 import subprocess
 
-# from dtcvc_competitor.dtcvc_triage_report_generator import DtcvcTriageReportGenerator
+# from dtcvc_Competitor.dtcvc_triage_report_generator import DtcvcTriageReportGenerator
 """
   Please check self.file_path which is int the final-saver script : and the manner to retreive the waypoints list
 """
 
-class Dtcvccompetitor(rclpy.node.Node):
+class DtcvcCompetitor(rclpy.node.Node):
     TOPIC_RGB_CAMERA = "/carla/{}/front_rgb/image"
     TOPIC_IR_CAMERA = "/carla/{}/front_ir/image"
 
@@ -35,7 +35,7 @@ class Dtcvccompetitor(rclpy.node.Node):
 
     def __init__(self):
         super().__init__(
-            "dtcvc_competitor",
+            "dtcvc_Competitor",
             allow_undeclared_parameters=True,
             automatically_declare_parameters_from_overrides=True,
         )
@@ -69,7 +69,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.comp_start_subscriber = self.log_subscription(
             self.create_subscription(
                 Empty,
-                Dtcvccompetitor.TOPIC_COMPETITION_START,
+                DtcvcCompetitor.TOPIC_COMPETITION_START,
                 self.comp_start_callback,
                 qos_profile=10,
             )
@@ -81,14 +81,14 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.comp_stop_subscriber = self.log_subscription(
             self.create_subscription(
                 Empty,
-                Dtcvccompetitor.TOPIC_COMPETITION_STOP,
+                DtcvcCompetitor.TOPIC_COMPETITION_STOP,
                 self.comp_stop_callback,
                 qos_profile=10,
             )
         )
 
         # Publish competitor ready signal
-        self.ready_publisher = self.create_publisher(Empty, Dtcvccompetitor.TOPIC_COMPETITOR_READY, 10)
+        self.ready_publisher = self.create_publisher(Empty, DtcvcCompetitor.TOPIC_COMPETITOR_READY, 10)
 
         # Periodically log current state
         self.log_timer = self.create_timer(5.0, self.log_info)
@@ -99,8 +99,8 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.get_logger().info(f"comp_start_callback(): start_time | {self.original_start_time}")
         # self.start_report_timer()
 
-        self.final_saver_process = subprocess.Popen(["python", "final-saver-sudhin.py"])
-        # self.make_txt_process = subprocess.Popen(["sh", "model.py"])
+        self.final_saver_process = subprocess.Popen(["python3", "final-saver-sudhin.py"])
+        self.make_txt_process = subprocess.Popen(["sh", "model.sh"])
 
 
     def comp_stop_callback(self, msg):
@@ -120,7 +120,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.rgb_subscriber = self.log_subscription(
             self.create_subscription(
                 Image,
-                Dtcvccompetitor.TOPIC_RGB_CAMERA.format(self.role_name),
+                DtcvcCompetitor.TOPIC_RGB_CAMERA.format(self.role_name),
                 self.rgb_image_callback,
                 qos_profile=10,
             )
@@ -129,7 +129,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.ir_subscriber = self.log_subscription(
             self.create_subscription(
                 Image,
-                Dtcvccompetitor.TOPIC_IR_CAMERA.format(self.role_name),
+                DtcvcCompetitor.TOPIC_IR_CAMERA.format(self.role_name),
                 self.ir_image_callback,
                 qos_profile=10,
             )
@@ -138,7 +138,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.gps_subscriber = self.log_subscription(
             self.create_subscription(
                 NavSatFix,
-                Dtcvccompetitor.TOPIC_GPS.format(self.role_name),
+                DtcvcCompetitor.TOPIC_GPS.format(self.role_name),
                 self.gnss_callback,
                 qos_profile=10,
             )
@@ -147,7 +147,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.imu_subscriber = self.log_subscription(
             self.create_subscription(
                 Imu,
-                Dtcvccompetitor.TOPIC_IMU.format(self.role_name),
+                DtcvcCompetitor.TOPIC_IMU.format(self.role_name),
                 self.imu_callback,
                 qos_profile=10,
             )
@@ -155,7 +155,7 @@ class Dtcvccompetitor(rclpy.node.Node):
 
         self.audio_subscriber = self.log_subscription(
             self.create_subscription(
-                String, Dtcvccompetitor.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
+                String, DtcvcCompetitor.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
             )
         )
 
@@ -189,7 +189,7 @@ class Dtcvccompetitor(rclpy.node.Node):
                     if not data:
                         break
                     sha.update(data)
-            # self.get_logger().info(f"Audio digest: {name.data} yields {sha.hexdigest()}")
+            self.get_logger().info(f"Audio digest: {name.data} yields {sha.hexdigest()}")
         except Exception as e:
             self.get_logger().info(str(e))
             pass
@@ -204,7 +204,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         """
         Callback when receiving a camera image
         """
-        # self.get_logger().info(f"IR frame: {image.width}x{image.height} ({image.encoding})")
+        self.get_logger().info(f"IR frame: {image.width}x{image.height} ({image.encoding})")
 
     def log_info(self):
         """
@@ -236,7 +236,7 @@ class Dtcvccompetitor(rclpy.node.Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = Dtcvccompetitor()
+    node = DtcvcCompetitor()
 
     try:
         rclpy.spin(node)
