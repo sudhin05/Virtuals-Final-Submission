@@ -4,11 +4,12 @@ from PIL import Image
 import os
 import threading
 import sys
+import argparse
 sys.path.append('/home/uas-dtu/SudhinDarpa/grand_finale/CLIP_VIRTUAL_LODA')
 from report_publisher import pub  
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model_path = "/home/uas-dtu/SudhinDarpa/Ocular/MRL_dataset_deit-384.pt"
+model_path = "/home/uas-dtu/SudhinDarpa/Ocular/final_weights.pt"
 model = torch.jit.load(model_path)
 model = model.to(device)
 
@@ -49,22 +50,25 @@ def ocular_model(folder_path):
                 "lat": float(latitude),
                 "alt": float(altitude)
             },
-            "alertness": {
+            "injuries": {
+                "alertness": {
                 "ocular": results
             } 
+                }
+            
         }
         
         return json_file
 
     open_count = 0
     close_count = 0
-    total_images = len(img_list)
+    total_images = 0
  
     for img_name in sorted(os.listdir(folder_path)):
-        if img_name.endswith(('.jpg', '.jpeg', '.png')):
-            txt_name = os.path.splitext(img_path)[0] + '.txt'
-            img_path = os.path.join(folder_path, img_name)
-            txt_path = os.path.join(folder_path, txt_name)
+        txt_name = os.path.splitext(img_name)[0] + '.txt'
+        img_path = os.path.join(folder_path, img_name)
+        txt_path = os.path.join(folder_path, txt_name)
+        if img_name.endswith(('.jpg', '.jpeg', '.png')) and os.path.exists(txt_path):
             
             last_img = os.path.splitext(img_name)[0]
             
