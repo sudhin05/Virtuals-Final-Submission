@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 import queue
 from threading import Lock
-
+import traceback
 
 def loader():
     pose_model = init_pose_model(
@@ -105,8 +105,9 @@ def run_pose_person_face(img_path, pose_model, person_model, face_model):
 
         # print(f"Results saved to {txt_path}")
     except Exception as e:
+        print("Exception in pose body face")
         print(e)
-        print("exception in pose body face")
+        traceback.print_exc() 
     
 def check_run(main_folder_path,pose_model,person_model,face_model,output_folder):
     shell_script_path = "somin.sh"
@@ -394,7 +395,7 @@ def make_gaussian(image_path, txt_path, output_folder,count):
             pass
         else:
             chest_region = person_cropped[y_min:y_max, x_min:x_max]
-            cv2.imwrite(os.path.join(output_folder, 'chest', f"chest_{count_k}.png"), chest_region)            
+            cv2.imwrite(os.path.join(output_folder, 'chest', f"chest_{count_k}.jpg"), chest_region)            
         
         # Left arm keypoints
         larm = np.expand_dims(np.concatenate((np.expand_dims(keypoints[5, :], axis=0), 
@@ -439,260 +440,20 @@ def make_gaussian(image_path, txt_path, output_folder,count):
         limb_list = get_gaussian_and_bfs_limbs(person_cropped,keypoints,sigmas,conf_thres=0.0)            
         if not (x1_face == 0 and x2_face == 0):
             face = person_cropped[y1_face:y2_face,x1_face:x2_face]
-            cv2.imwrite(os.path.join(output_folder, 'face', f"face_{count_k}.png"), face)
+            cv2.imwrite(os.path.join(output_folder, 'face', f"face_{count_k}.jpg"), face)
         # else:
             # print("face region image is empty so not saving.")
         # try:   
         # print(f"Saving images tp {output_folder}") 
-        cv2.imwrite(os.path.join(output_folder, 'larm', f"larm_{count_k}.png"), limb_list[0])
-        cv2.imwrite(os.path.join(output_folder, 'rarm', f"rarm_{count_k}.png"), limb_list[1])
-        cv2.imwrite(os.path.join(output_folder, 'lleg', f"lleg_{count_k}.png"), limb_list[2])
-        cv2.imwrite(os.path.join(output_folder, 'rleg', f"rleg_{count_k}.png"), limb_list[3])
+        cv2.imwrite(os.path.join(output_folder, 'larm', f"larm_{count_k}.jpg"), limb_list[0])
+        cv2.imwrite(os.path.join(output_folder, 'rarm', f"rarm_{count_k}.jpg"), limb_list[1])
+        cv2.imwrite(os.path.join(output_folder, 'lleg', f"lleg_{count_k}.jpg"), limb_list[2])
+        cv2.imwrite(os.path.join(output_folder, 'rleg', f"rleg_{count_k}.jpg"), limb_list[3])
         return count_k
     
     except Exception as e:
         print("HEllo")
         print(e)
-           
-def check_run_2(main_folder_path, pose_model, person_model, face_model, output_folder):
-    os.makedirs(output_folder, exist_ok=True)
-    visited_folders = []
-    flag_dict = {}
-    count_dict = {}
-    occ_dict = {}
-    txt_dict = {}
-    lock = Lock()  # Lock for thread-safe operations
-    while True:
-        if os.path.exists(main_folder_path):
-            print(visited_folders)
-            folders = sorted(os.listdir(main_folder_path))
-            with ThreadPoolExecutor() as executor:
-                for folder in folders:
-                    txt_files_number = 0
-                    image_number = 0
-                    with lock:
-                        if folder not in flag_dict:
-                            flag_dict[folder] = True
-                            count_dict[folder] = 0
-                            occ_dict[folder] = 0
-                        
-                    if folder not in visited_folders:
-                        folder_path = os.path.join(main_folder_path, folder)
-                        images_and_txts = sorted(os.listdir(folder_path))
-                        image_list = []  
-                        txt_list = []  
-                        
-                        for file in images_and_txts:
-                            if file.endswith(('.jpg', '.png')):  
-                                image_number += 1
-                             
-                                image_name, extension = os.path.splitext(file)
-                                image_path = os.path.join(folder_path, file)
-                                txt_path = os.path.join(folder_path, f"{image_name}.txt")
-                                output_subfolder = os.path.join(output_folder, folder)
-                                os.makedirs(output_subfolder, exist_ok=True)
-                                
-                                if not os.path.exists(txt_path):
-                                    # print("Processing image:", image_path)
-                                    run_pose_person_face(image_path, pose_model, person_model, face_model)
-                                    
-                                    if os.path.exists(txt_path):
-                                        txt_files_number +=1
-                                        image_list.append(image_path)
-                                        txt_list.append(txt_path)
-                                        with lock:
-                                            if count_dict[folder] < 50:
-                                                executor.submit(make_gaussian, image_path, txt_path, output_folder=output_subfolder, count=count_dict[folder])
-                                                count_dict[folder] += 1
-                                
-                                        with lock:
-                                            if flag_dict[folder] and count_dict[folder] >= 50:
-                                                images_and_txts = sorted(os.listdir(folder_path))
-                                                observation_start = float(images_and_txts[0].split("_")[-1].split(".")[0])
-                                                observation_end = float(images_and_txts[99].split("_")[-1].split(".")[0])
-                                                print(f"Running shell script for folder: {folder}")
-                                                subprocess.Popen(["sh", "somin.sh", f"../../{output_subfolder}", f"{observation_start}", f"{observation_end}"])
-                                                flag_dict[folder] = False
-                                else:
-                                    txt_files_number += 1
-                                    
-                        
-                            if txt_files_number >= 100 and image_number >= 100:
-                                with lock:
-                                    if occ_dict[folder] == 0: 
-                                        print(f"Checking ocular alertness for folder: {folder}")
-                                        result = ocular_model(image_list, txt_list)  
-                                        print(f"Ocular alertness result: {result}")
-                                        occ_dict[folder] = 1
-
-                        if len(folders) >= len(visited_folders) + 2 and image_number == txt_files_number:
-                            visited_folders.append(folder)
-                            # print(f"Visited folders: {visited_folders}")
-
-def check_run_3(main_folder_path, pose_model, person_model, face_model, output_folder):
-    
-    os.makedirs(output_folder, exist_ok=True)
-    visited_folders = []
-    flag_dict = {}
-    count_dict = {}
-    occ_dict = {}
-    txt_dict = {}
-    lock = Lock()  
-    number_of_txt_files = 200
-    while True:
-        if os.path.exists(main_folder_path):
-            while True:
-                folders = sorted(os.listdir(main_folder_path))
-                with ThreadPoolExecutor() as executor:
-                    
-                    for folder in folders:
-                        if folder not in visited_folders:
-                            
-                            # print(f"Inside Folder : {folder}")
-                            
-                            txt_files_number = 0
-                            image_number = 0
-                            
-                            
-                            with lock:
-                                if folder not in flag_dict:
-                                    flag_dict[folder] = True
-                                    count_dict[folder] = 0
-                                    occ_dict[folder] = 0
-                                    txt_dict[folder] = 0
-                                
-                            folder_path = os.path.join(main_folder_path, folder)
-                            images_and_txts = sorted(os.listdir(folder_path))
-                            
-                            # print(f"Images and Txt : {len(images_and_txts)}")
-                            
-                            image_list = []  
-                            txt_list = []  
-                            
-                            for file in images_and_txts:
-                                if file.endswith(('.jpg', '.png')):  
-                                    image_number += 1
-                                
-                                    image_name, extension = os.path.splitext(file)
-                                    image_path = os.path.join(folder_path, file)
-                                    txt_path = os.path.join(folder_path, f"{image_name}.txt")
-                                    output_subfolder = os.path.join(output_folder, folder)
-                                    os.makedirs(output_subfolder, exist_ok=True)
-                                    
-                                    if not os.path.exists(txt_path) and txt_files_number < number_of_txt_files:
-                                        
-                                        # print("Processing image:", image_path)
-                                        
-                                        run_pose_person_face(image_path, pose_model, person_model, face_model)
-                                        
-                                        if os.path.exists(txt_path):
-                                            txt_files_number +=1
-                                            image_list.append(image_path)
-                                            txt_list.append(txt_path)
-                                            with lock:
-                                                if count_dict[folder] < 50:
-                                                    executor.submit(make_gaussian, image_path, txt_path, output_folder=output_subfolder, count=count_dict[folder])
-                                                    count_dict[folder] += 1
-                                    
-                                            with lock:
-                                                if flag_dict[folder] and count_dict[folder] >= 50:
-                                                    images_and_txts = sorted(os.listdir(folder_path))
-                                                    observation_start = float(images_and_txts[0].split("_")[-1].split(".")[0])
-                                                    observation_end = float(images_and_txts[99].split("_")[-1].split(".")[0])
-                                                    
-                                                    # print(f"Running shell script for folder: {folder}")
-                                                    
-                                                    subprocess.Popen(["sh", "somin.sh", f"../../{output_subfolder}", f"{observation_start}", f"{observation_end}"])
-                                                    flag_dict[folder] = False
-                                                    
-                                                    
-                                        # else:
-                                            # print(f"Txt file not created for {file}") 
-
-                                # print(f"Lenght of Images List : {len(image_list)} Txt List : {len(txt_list)}")
-                                print("images numer and text number",image_number,txt_files_number)
-                                if txt_files_number >= 100 and image_number >= 100:
-                                    print("yaha pr haiii")
-                                    
-                                    with lock:
-                                        if occ_dict[folder] == 0: 
-                                            
-                                            # observation_end = float(image_list[99].split("_")[-1].split(".")[0])
-                                            # print(observation_end)
-                                            print(f"Checking ocular alertness for folder: {folder}")
-                                            
-                                            # result = ocular_model(folder,image_list, txt_list, observation_end)  
-                                            subprocess.Popen(["sh", "ocular.sh", f"{folder}"])
-                                            # print(f"Ocular alertness result: {result}")
-                                            
-                                            occ_dict[folder] = 1
-
-                            if len(folders) >= len(visited_folders) + 2 and txt_files_number >= number_of_txt_files:
-                                visited_folders.append(folder)
-                                
-                                print(f"Visited folders: {visited_folders}")
-
-
-subprocess_queue = queue.Queue()
-
-# Function to process tasks from the queue in the background
-def worker():
-    while True:
-        script_args = subprocess_queue.get()  # Get the next subprocess args
-        if script_args is None:  # Exit condition
-            break
-        subprocess.run(script_args)  # Run the shell script
-        subprocess_queue.task_done()  # Mark task as done
-
-# Start the worker thread
-worker_thread = threading.Thread(target=worker, daemon=True)
-worker_thread.start()
-
-def check_run_queue(main_folder_path, pose_model, person_model, face_model, output_folder):
-    shell_script_path = "somin.sh"
-    os.makedirs(output_folder, exist_ok=True)
-    
-    while True:
-        if os.path.exists(main_folder_path):
-            visited_folders = []
-            while True:
-                folders = sorted(os.listdir(main_folder_path))
-                txt_files_number = 0
-                image_number = 0
-                casualty_number = 0
-                print(visited_folders)
-                
-                for folder in folders:
-                    flag = True
-                    count = 0
-                    output_subfolder = os.path.join(output_folder, folder)
-                    os.makedirs(output_subfolder, exist_ok=True)
-                    
-                    if folder not in visited_folders:
-                        folder_path = os.path.join(main_folder_path, folder)
-                        images_and_txts = sorted(os.listdir(folder_path))
-                        
-                        for file in images_and_txts:
-                            if file.endswith(('.jpg', '.png')):
-                                image_number += 1
-                                image_name, extension = os.path.splitext(file)
-                                image_path = os.path.join(folder_path, file)
-                                txt_path = os.path.join(folder_path, f"{image_name}.txt")
-                                
-                                if not os.path.exists(txt_path):
-                                    run_pose_person_face(image_path, pose_model, person_model, face_model)
-                                    
-                                    if os.path.exists(txt_path):
-                                        if count < 50:
-                                            count = make_gaussian(image_path, txt_path, output_folder=output_subfolder, count=count)
-                                        elif flag:
-                                            # Add the subprocess call to the queue instead of running it immediately
-                                            subprocess_queue.put(["sh", shell_script_path, f"../../{output_subfolder}"])
-                                            flag = False
-                                else:
-                                    count += 1
-                                    txt_files_number += 1  
-  
 
 def check_run_4(main_folder_path, pose_model, person_model, face_model, output_folder):
     
@@ -703,6 +464,7 @@ def check_run_4(main_folder_path, pose_model, person_model, face_model, output_f
     occ_dict = {}
     txt_dict = {}
     lock = Lock()  
+    
     number_of_txt_files = 200
     while True:
         if os.path.exists(main_folder_path):
@@ -710,11 +472,17 @@ def check_run_4(main_folder_path, pose_model, person_model, face_model, output_f
                 folders = sorted(os.listdir(main_folder_path))
                 with ThreadPoolExecutor() as executor:
                     
-                    for folder in folders:
+                    for current_folder_index,folder in enumerate(folders):
                         if folder not in visited_folders:
                             
-                            print(f"Inside Folder : {folder}")
+                            if len(folders) >=2 and current_folder_index > 0:
+                                previous_folder_index = current_folder_index - 1
+                                if folders[previous_folder_index] not in visited_folders:
+                                    print(f"Currently in folder : {folder} | Added {folder[previous_folder_index]} to visited folder")
+                                    visited_folders.append(folders[previous_folder_index])
                             
+                            print(f"Inside Folder : {folder} | Folder list : {folders}")
+                                            
                             image_number = 0                            
                             
                             with lock:
@@ -729,11 +497,6 @@ def check_run_4(main_folder_path, pose_model, person_model, face_model, output_f
                             folder_path = os.path.join(main_folder_path, folder)
                             images_and_txts = sorted(os.listdir(folder_path))
                             
-                            print(f"Images and Txt : {len(images_and_txts)}")
-                            
-                            image_list = []  
-                            txt_list = []  
-                            
                             for file in images_and_txts:
                                 if file.endswith(('.jpg', '.png')):  
                                     image_number += 1
@@ -743,15 +506,11 @@ def check_run_4(main_folder_path, pose_model, person_model, face_model, output_f
                                     txt_path = os.path.join(folder_path, f"{image_name}.txt")
                                     
                                     if not os.path.exists(txt_path) and txt_dict[folder] < number_of_txt_files:
-                                        
-                                        print("Processing image:", image_path)
-                                        
+                                                                                
                                         run_pose_person_face(image_path, pose_model, person_model, face_model)
                                         
                                         if os.path.exists(txt_path):
                                             txt_dict[folder] +=1
-                                            image_list.append(image_path)
-                                            txt_list.append(txt_path)
                                             with lock:
                                                 if count_dict[folder] < 50:
                                                     executor.submit(make_gaussian, image_path, txt_path, output_folder=output_subfolder, count=count_dict[folder])
@@ -776,36 +535,26 @@ def check_run_4(main_folder_path, pose_model, person_model, face_model, output_f
                                 
                                 print(f"Folder : {folder} | Images : {image_number} | TxTs : {txt_dict[folder]}")
                                 
-                                # if txt_dict >= 100 and image_number >= 100:
-                                #     print("yaha pr haiii")
+                                if txt_dict[folder] >= 100:
 
-                                #     with lock:
-                                #         if occ_dict[folder] == True: 
+                                    with lock:
+                                        if occ_dict[folder] == True: 
                                             
-                                #             # observation_end = float(image_list[99].split("_")[-1].split(".")[0])
-                                #             # print(observation_end)
-                                #             print(f"Checking ocular alertness for folder: {folder}")
+                                            # observation_end = float(image_list[99].split("_")[-1].split(".")[0])
+                                            # print(observation_end)
+                                            print(f"Checking ocular alertness for folder: {folder_path}")
                                             
-                                #             # result = ocular_model(folder,image_list, txt_list, observation_end)  
-                                #             subprocess.Popen(["sh", "ocular.sh", f"{folder}"])
-                                #             # print(f"Ocular alertness result: {result}")
+                                            folder_path_ocular = f"../{folder_path}"
+                                            subprocess.Popen(["sh", "ocular.sh", f"{folder_path_ocular}"])
                                             
-                                #             occ_dict[folder] = False
+                                            occ_dict[folder] = False
 
-                            if txt_dict >= number_of_txt_files:
-                                visited_folders.append(folder)
-                                print(f"Visited folders: {visited_folders}")
+                                if txt_dict[folder] >= number_of_txt_files:
+                                    visited_folders.append(folder)
+                                    print(f"Visited folders: {visited_folders}")
 
 
 if __name__=="__main__":
     pose_model,person_model,face_model = loader()
     output_folder = f"Gaussian_tests"
-    check_run_4("images-sudhin",pose_model,person_model,face_model,output_folder)
-    
-    # image_path = f"images/waypt16_16_48.9272429840087_8.110779011656756_-31.695281982421875_385/image_00006.jpg"
-    # txt_path = f"images/waypt16_16_48.9272429840087_8.110779011656756_-31.695281982421875_385/image_00006.txt"
-    # output_folder = "Gaussian_test"
-    # visualize_txt(image_path,txt_path)
-    # st = time.time()
-    # make_gaussian(image_path, txt_path, output_folder)
-    # print(time.time() - st)
+    check_run_4("images",pose_model,person_model,face_model,output_folder)
