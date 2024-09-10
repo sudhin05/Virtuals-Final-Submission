@@ -9,7 +9,7 @@ import rclpy.node
 
 from geometry_msgs.msg import Quaternion
 from rclpy.parameter import Parameter
-# from sensor_msgs.msg import Image, NavSatFix, Imu, PointCloud2
+from sensor_msgs.msg import Image, NavSatFix, Imu, PointCloud2
 from std_msgs.msg import Empty, Bool, String
 
 import subprocess
@@ -20,12 +20,12 @@ import subprocess
 """
 
 class Dtcvccompetitor(rclpy.node.Node):
-    # TOPIC_RGB_CAMERA = "/carla/{}/front_rgb/image"
-    # TOPIC_IR_CAMERA = "/carla/{}/front_ir/image"
+    TOPIC_RGB_CAMERA = "/carla/{}/front_rgb/image"
+    TOPIC_IR_CAMERA = "/carla/{}/front_ir/image"
 
-    # TOPIC_GPS = "/carla/{}/gnss"
-    # TOPIC_IMU = "/carla/{}/imu"
-    # TOPIC_AUDIO = "/carla/{}/audio_file_name"
+    TOPIC_GPS = "/carla/{}/gnss"
+    TOPIC_IMU = "/carla/{}/imu"
+    TOPIC_AUDIO = "/carla/{}/audio_file_name"
     
     TOPIC_COMPETITION_START = "/dtc/simulation_start"
     TOPIC_COMPETITION_STOP = "/dtc/simulation_stop"
@@ -42,9 +42,9 @@ class Dtcvccompetitor(rclpy.node.Node):
 
         self._info_text = []
 
-        # self.role_name = self.get_parameter_or("role_name", "ego_vehicle")
-        # if type(self.role_name) == Parameter:
-        #     self.role_name = self.role_name.get_parameter_value().string_value
+        self.role_name = self.get_parameter_or("role_name", "ego_vehicle")
+        if type(self.role_name) == Parameter:
+            self.role_name = self.role_name.get_parameter_value().string_value
 
         self.latitude = 0
         self.longitude = 0
@@ -53,7 +53,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         #Initializes Competitor start and stop
         self.init_topics()
         #Initializes Competitor Sensors
-        # self.init_sensors()
+        self.init_sensors()
         #Initializies Competitor Data Collectors
 
 
@@ -100,7 +100,7 @@ class Dtcvccompetitor(rclpy.node.Node):
         # self.start_report_timer()
 
         self.final_saver_process = subprocess.Popen(["python", "final-saver-sudhin.py"])
-        self.make_txt_process = subprocess.Popen(["sh", "model.py"])
+        # self.make_txt_process = subprocess.Popen(["sh", "model.py"])
 
 
     def comp_stop_callback(self, msg):
@@ -115,96 +115,96 @@ class Dtcvccompetitor(rclpy.node.Node):
         self.get_logger().info("publish_ready_state(): Sending [competitor-node] ready signal")
         self.ready_publisher.publish(Empty())
 
-    # def init_sensors(self):
+    def init_sensors(self):
         
-    #     self.rgb_subscriber = self.log_subscription(
-    #         self.create_subscription(
-    #             Image,
-    #             Dtcvccompetitor.TOPIC_RGB_CAMERA.format(self.role_name),
-    #             self.rgb_image_callback,
-    #             qos_profile=10,
-    #         )
-    #     )
+        self.rgb_subscriber = self.log_subscription(
+            self.create_subscription(
+                Image,
+                Dtcvccompetitor.TOPIC_RGB_CAMERA.format(self.role_name),
+                self.rgb_image_callback,
+                qos_profile=10,
+            )
+        )
 
-    #     self.ir_subscriber = self.log_subscription(
-    #         self.create_subscription(
-    #             Image,
-    #             Dtcvccompetitor.TOPIC_IR_CAMERA.format(self.role_name),
-    #             self.ir_image_callback,
-    #             qos_profile=10,
-    #         )
-    #     )
+        self.ir_subscriber = self.log_subscription(
+            self.create_subscription(
+                Image,
+                Dtcvccompetitor.TOPIC_IR_CAMERA.format(self.role_name),
+                self.ir_image_callback,
+                qos_profile=10,
+            )
+        )
 
-    #     self.gps_subscriber = self.log_subscription(
-    #         self.create_subscription(
-    #             NavSatFix,
-    #             Dtcvccompetitor.TOPIC_GPS.format(self.role_name),
-    #             self.gnss_callback,
-    #             qos_profile=10,
-    #         )
-    #     )
+        self.gps_subscriber = self.log_subscription(
+            self.create_subscription(
+                NavSatFix,
+                Dtcvccompetitor.TOPIC_GPS.format(self.role_name),
+                self.gnss_callback,
+                qos_profile=10,
+            )
+        )
 
-    #     self.imu_subscriber = self.log_subscription(
-    #         self.create_subscription(
-    #             Imu,
-    #             Dtcvccompetitor.TOPIC_IMU.format(self.role_name),
-    #             self.imu_callback,
-    #             qos_profile=10,
-    #         )
-    #     )
+        self.imu_subscriber = self.log_subscription(
+            self.create_subscription(
+                Imu,
+                Dtcvccompetitor.TOPIC_IMU.format(self.role_name),
+                self.imu_callback,
+                qos_profile=10,
+            )
+        )
 
-    #     self.audio_subscriber = self.log_subscription(
-    #         self.create_subscription(
-    #             String, Dtcvccompetitor.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
-    #         )
-    #     )
+        self.audio_subscriber = self.log_subscription(
+            self.create_subscription(
+                String, Dtcvccompetitor.TOPIC_AUDIO.format(self.role_name), self.on_audio_msg, qos_profile=10
+            )
+        )
 
     def log_subscription(self, subscription):
         self.get_logger().info(f"Subscribed to: {subscription.topic_name}")
         return subscription
 
-    # def gnss_callback(self, data: NavSatFix):
-    #     """
-    #     Callback on GPS sensor updates
-    #     """
-    #     self.latitude = data.latitude
-    #     self.longitude = data.longitude
+    def gnss_callback(self, data: NavSatFix):
+        """
+        Callback on GPS sensor updates
+        """
+        self.latitude = data.latitude
+        self.longitude = data.longitude
 
-    # def imu_updated(self, data: Imu):
-    #     """
-    #     Callback on IMU sensor updates
-    #     """
-    #     self.orientation = data.orientation
+    def imu_updated(self, data: Imu):
+        """
+        Callback on IMU sensor updates
+        """
+        self.orientation = data.orientation
 
-    # def on_audio_msg(self, name: String):
-    #     if name.data == "None":
-    #         return
+    def on_audio_msg(self, name: String):
+        if name.data == "None":
+            return
 
-    #     path = os.path.join("/mnt/wavs", name.data + ".wav")
-    #     try:
-    #         sha = hashlib.sha256()
-    #         with open(path, "rb") as audio:
-    #             while True:
-    #                 data = audio.read(64 * 1024)
-    #                 if not data:
-    #                     break
-    #                 sha.update(data)
-    #         self.get_logger().info(f"Audio digest: {name.data} yields {sha.hexdigest()}")
-    #     except Exception as e:
-    #         self.get_logger().info(str(e))
-    #         pass
+        path = os.path.join("/mnt/wavs", name.data + ".wav")
+        try:
+            sha = hashlib.sha256()
+            with open(path, "rb") as audio:
+                while True:
+                    data = audio.read(64 * 1024)
+                    if not data:
+                        break
+                    sha.update(data)
+            # self.get_logger().info(f"Audio digest: {name.data} yields {sha.hexdigest()}")
+        except Exception as e:
+            self.get_logger().info(str(e))
+            pass
 
-    # def on_rgb_image(self, image: Image):
-    #     """
-    #     Callback when receiving a camera image
-    #     """
-    #     self.get_logger().info(f"RGB frame: {image.width}x{image.height} ({image.encoding})")
+    def on_rgb_image(self, image: Image):
+        """
+        Callback when receiving a camera image
+        """
+        self.get_logger().info(f"RGB frame: {image.width}x{image.height} ({image.encoding})")
 
-    # def on_ir_image(self, image: Image):
-    #     """
-    #     Callback when receiving a camera image
-    #     """
-    #     self.get_logger().info(f"IR frame: {image.width}x{image.height} ({image.encoding})")
+    def on_ir_image(self, image: Image):
+        """
+        Callback when receiving a camera image
+        """
+        # self.get_logger().info(f"IR frame: {image.width}x{image.height} ({image.encoding})")
 
     def log_info(self):
         """
